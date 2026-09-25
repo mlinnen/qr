@@ -1,0 +1,17 @@
+{
+  "name": "qr-redirect",
+  "version": "1.0.0",
+  "description": "Static GitHub Pages redirect router for durable QR codes",
+  "main": "scripts/build.js",
+  "scripts": {
+    "build": "node scripts/build.js",
+    "test": "node scripts/build.js"
+  },
+  "keywords": [
+    "qr",
+    "redirect",
+    "github-pages"
+  ],
+  "author": "",
+  "license": "ISC"
+}

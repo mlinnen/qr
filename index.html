@@ -1,0 +1,127 @@
+<!doctype html>
+<html lang="en">
+  <head>
+    <meta charset="utf-8">
+    <meta name="viewport" content="width=device-width,initial-scale=1">
+    <title>Redirecting...</title>
+    <style>
+      :root {
+        color-scheme: light dark;
+      }
+      body {
+        margin: 0;
+        min-height: 100vh;
+        display: grid;
+        place-items: center;
+        font-family: system-ui, -apple-system, Segoe UI, Roboto, Helvetica, Arial, sans-serif;
+        background: #f4f6f8;
+        color: #111;
+      }
+      .card {
+        width: min(34rem, calc(100% - 2rem));
+        background: #fff;
+        border-radius: 0.75rem;
+        padding: 1.25rem;
+        box-shadow: 0 10px 30px rgba(0, 0, 0, 0.12);
+      }
+      h1 {
+        font-size: 1.25rem;
+        margin: 0 0 0.5rem;
+      }
+      p {
+        margin: 0.5rem 0;
+        line-height: 1.5;
+      }
+      .status {
+        display: inline-flex;
+        align-items: center;
+        gap: 0.5rem;
+      }
+      .status::before {
+        content: "";
+        width: 0.8rem;
+        height: 0.8rem;
+        border: 2px solid #a4adba;
+        border-top-color: #1769e0;
+        border-radius: 50%;
+        animation: spin 0.8s linear infinite;
+      }
+      @keyframes spin {
+        to {
+          transform: rotate(360deg);
+        }
+      }
+      a {
+        color: #1769e0;
+      }
+    </style>
+  </head>
+  <body>
+    <main class="card">
+      <h1>Taking you there...</h1>
+      <p class="status" id="status">Preparing your redirect.</p>
+      <p>
+        If you are not redirected automatically within 3 seconds,
+        <a id="manual-link" href="https://minthillevents.org/?utm_source=gemini">click here</a>.
+      </p>
+      <noscript>
+        <p>
+          JavaScript is disabled.
+          <a href="https://minthillevents.org/?utm_source=gemini">Click here to proceed</a>.
+        </p>
+      </noscript>
+    </main>
+    <script>
+      (function () {
+        const CONFIG = {
+          defaultUrl: "https://minthillevents.org/?utm_source=gemini",
+          routes: {
+            scarecrow: "https://minthillevents.org/?utm_source=gemini"
+          }
+        };
+
+        const status = document.getElementById("status");
+        const manualLink = document.getElementById("manual-link");
+
+        function findAlias(searchParams) {
+          for (const [key, value] of searchParams.entries()) {
+            const lower = key.trim().toLowerCase();
+            if (lower === "to" || lower === "id") {
+              return value.trim().toLowerCase();
+            }
+          }
+          return "";
+        }
+
+        function isValidDestination(url) {
+          try {
+            const parsed = new URL(url);
+            return parsed.protocol === "https:" || parsed.protocol === "http:";
+          } catch (_error) {
+            return false;
+          }
+        }
+
+        const alias = findAlias(new URLSearchParams(window.location.search));
+        const routeTarget = alias ? CONFIG.routes[alias] : "";
+        const destination = isValidDestination(routeTarget)
+          ? routeTarget
+          : CONFIG.defaultUrl;
+
+        if (alias && routeTarget) {
+          status.textContent = "Redirecting you now.";
+        } else if (alias) {
+          status.textContent = "Alias not found. Sending you to the default page.";
+        } else {
+          status.textContent = "No alias provided. Sending you to the default page.";
+        }
+
+        manualLink.href = destination;
+
+        window.setTimeout(function () {
+          window.location.replace(destination);
+        }, 50);
+      })();
+    </script>
+  </body>
+</html>

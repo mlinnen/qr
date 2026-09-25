@@ -57,3 +57,10 @@ When generating QR codes, keep the URL format:
 `https://mlinnen.github.io/qr/?to=<alias>`
 
 Use a trailing slash before query parameters to avoid extra redirect hops.
+
+### Generate QR Codes
+Since this project uses node then we might as well use the qrcode node tool to generate a valid qrcode.
+
+```bash
+npx qrcode "https://mlinnen.github.io/qr/?to=mhscarecontest" -w 1000 -e H -o docs/mhscarecontest.png
+```

@@ -59,29 +59,32 @@
   <body>
     <main class="card">
       <h1>Taking you there...</h1>
-      <p class="status" id="status">Preparing your redirect.</p>
+      <p class="status" id="status" role="status" aria-live="polite">Preparing your redirect.</p>
       <p>
-        If you are not redirected automatically within 3 seconds,
-        <a id="manual-link" href="https://minthillevents.org/?utm_source=gemini">click here</a>.
+        If you are not redirected automatically,
+        <a id="manual-link" href="https://minthillevents.org/">click here</a>.
       </p>
       <noscript>
         <p>
           JavaScript is disabled.
-          <a href="https://minthillevents.org/?utm_source=gemini">Click here to proceed</a>.
+          <a href="https://minthillevents.org/">Click here to proceed</a>.
         </p>
       </noscript>
     </main>
     <script>
       (function () {
+        const manualLink = document.getElementById("manual-link");
+        const ALLOWED_DESTINATIONS = [
+          { origin: "https://minthillevents.org", pathPrefix: "/" },
+          { origin: "https://docs.google.com", pathPrefix: "/forms/" }
+        ];
         const CONFIG = {
-          defaultUrl: "https://minthillevents.org/?utm_source=gemini",
           routes: {
-            scarecrow: "https://minthillevents.org/?utm_source=gemini"
+            scarecrow: "https://docs.google.com/forms/d/e/example/viewform"
           }
         };
 
         const status = document.getElementById("status");
-        const manualLink = document.getElementById("manual-link");
 
         function findAlias(searchParams) {
           for (const [key, value] of searchParams.entries()) {
@@ -96,20 +99,34 @@
         function isValidDestination(url) {
           try {
             const parsed = new URL(url);
-            return parsed.protocol === "https:" || parsed.protocol === "http:";
+            if (parsed.protocol !== "https:") {
+              return false;
+            }
+            return ALLOWED_DESTINATIONS.some(function (rule) {
+              return parsed.origin === rule.origin && parsed.pathname.startsWith(rule.pathPrefix);
+            });
           } catch (_error) {
             return false;
           }
         }
 
         const alias = findAlias(new URLSearchParams(window.location.search));
-        const routeTarget = alias ? CONFIG.routes[alias] : "";
-        const destination = isValidDestination(routeTarget)
-          ? routeTarget
-          : CONFIG.defaultUrl;
+        const defaultUrl = isValidDestination(manualLink.href) ? manualLink.href : "";
+        if (!defaultUrl) {
+          status.textContent = "Redirect configuration error.";
+          manualLink.removeAttribute("href");
+          return;
+        }
 
-        if (alias && routeTarget) {
+        const routeTarget = alias ? CONFIG.routes[alias] : "";
+        const hasRoute = Boolean(alias) && Object.prototype.hasOwnProperty.call(CONFIG.routes, alias);
+        const hasValidRoute = hasRoute && isValidDestination(routeTarget);
+        const destination = hasValidRoute ? routeTarget : defaultUrl;
+
+        if (hasValidRoute) {
           status.textContent = "Redirecting you now.";
+        } else if (hasRoute) {
+          status.textContent = "Alias target is unavailable. Sending you to the default page.";
         } else if (alias) {
           status.textContent = "Alias not found. Sending you to the default page.";
         } else {
@@ -117,10 +134,9 @@
         }
 
         manualLink.href = destination;
-
         window.setTimeout(function () {
           window.location.replace(destination);
-        }, 50);
+        }, 3000);
       })();
     </script>
   </body>

@@ -10,13 +10,18 @@ Use QR codes that point to this site with an alias query string:
 - `https://mlinnen.github.io/qr/?id=scarecrow`
 
 The router reads the alias, looks it up in `CONFIG.routes` in `index.html`, then redirects with `window.location.replace(...)`.
+Alias-based routing depends on JavaScript being enabled.
+Missing or unknown aliases fall back to the default destination.
+When JavaScript is disabled, the page shows a direct link to the default destination.
+Alias-specific `to`/`id` routing does not run in the no-JS path.
 
 ## Updating routes
 
 Edit `index.html` and update:
 
-- `CONFIG.defaultUrl` for unmatched/missing aliases
 - `CONFIG.routes` key/value pairs (alias -> full destination URL)
+- The `#manual-link` URL, which is used as the default fallback destination
+- The `<noscript>` fallback link URL (keep it aligned with `#manual-link`)
 
 Example:
 

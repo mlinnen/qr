@@ -59,8 +59,8 @@ When generating QR codes, keep the URL format:
 Use a trailing slash before query parameters to avoid extra redirect hops.
 
 ### Generate QR Codes
-Since this project uses node then we might as well use the qrcode node tool to generate a valid qrcode.
+Since this project uses node then we might as well use the qrcode node tool to generate a valid qrcode.  The following command will generate a QR code with high enough resolution (1500px) that it will work good outside on a big sheet of paper.
 
 ```bash
-npx qrcode "https://mlinnen.github.io/qr/?to=mhscarecontest" -w 1000 -e H -o docs/mhscarecontest.png
+npx qrcode "https://mlinnen.github.io/qr/?to=mhscarecontest" -w 1500 -e H -o docs/mhscarecontest.png
 ```
